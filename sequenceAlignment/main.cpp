@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	std::cout << "Sequence A: " << sequenceA << std::endl;
 	std::cout << "Sequence B: " << sequenceB << std::endl;
 	
-	needlemanWunsch(sequenceA, sequenceB, -1);
+	needlemanWunsch(sequenceA, sequenceB, 0);
 	
 	return 0;
 }
@@ -67,7 +67,7 @@ void needlemanWunsch(std::string sequenceA, std::string sequenceB, int gapPenalt
 
 std::vector<std::string> processNeedlemanMatrix(int *matrixPtr, int x, int y, std::string sequenceA, std::string sequenceB, std::string buffer, int gapPenalty) {
 	std::vector<std::string> result(0);
-	
+
 	if(x == 0 && y == 0) {
 		std::reverse(buffer.begin(), buffer.end());
 		result.insert(result.end(), buffer);
@@ -81,14 +81,18 @@ std::vector<std::string> processNeedlemanMatrix(int *matrixPtr, int x, int y, st
 	
 	int currentVal = matrixPtr[pos];
 	
-	if(x != 0 && matrixPtr[pos-1] == currentVal) {
+	if(x != 0 && matrixPtr[pos-1] + gapPenalty == currentVal) {
 		leftAlignments = processNeedlemanMatrix(matrixPtr, x-1, y, sequenceA, sequenceB, buffer + "-", gapPenalty);
 	}
-	if(y != 0 && matrixPtr[pos - (sequenceB.length() + 1)] == currentVal) {
+	if(y != 0 && matrixPtr[pos - (sequenceB.length() + 1)] + gapPenalty == currentVal) {
 		topAlignments = processNeedlemanMatrix(matrixPtr, x, y-1, sequenceA, sequenceB, buffer + "-", gapPenalty);
 	}
-	if(x != 0 && y != 0 && sequenceA[y-1] == sequenceB[x-1]) {
-		diagonalAlignments = processNeedlemanMatrix(matrixPtr, x-1, y-1, sequenceA, sequenceB, buffer + sequenceA[y-1], gapPenalty);
+	if(x != 0 && y != 0) {
+		if(sequenceA[y-1] == sequenceB[x-1]) {
+			diagonalAlignments = processNeedlemanMatrix(matrixPtr, x-1, y-1, sequenceA, sequenceB, buffer + sequenceA[y-1], gapPenalty);
+		} else if(matrixPtr[pos - (sequenceB.length() + 2)] == matrixPtr[pos]) {
+			diagonalAlignments = processNeedlemanMatrix(matrixPtr, x-1, y-1, sequenceA, sequenceB, buffer + "-", gapPenalty);
+		}
 	}
 	
 	for(std::vector<std::string>::iterator it = topAlignments.begin(); it != topAlignments.end(); ++it) {
