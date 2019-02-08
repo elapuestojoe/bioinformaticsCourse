@@ -1,0 +1,1 @@
+./Debug/stringUtilities.cpp.o ./Debug/needlemanWunsch.cpp.o ./Debug/blossum.cpp.o ./Debug/main.cpp.o ./Debug/sequenceUtilities.cpp.o   
